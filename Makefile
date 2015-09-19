@@ -1,12 +1,9 @@
-CFLAGS += -mavx -O3 -std=c99
+CFLAGS += -mavx -std=c99 -Wall -Werror -O0 -lm
 
-all: baseline avx
+all: compute_pi
 
-baseline: baseline.c
-	gcc $(CFLAGS) $< -o $@
-
-avx: avx.c
+compute_pi: compute_pi.c
 	gcc $(CFLAGS) $< -o $@
 
 clean:
-	rm avx baseline
+	rm compute_pi
