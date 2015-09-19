@@ -8,6 +8,8 @@
 
 #define M_PI acos(-1.0)
 
+#define SAMPLE_SIZE 10
+
 double compute_pi_baseline(size_t dt)
 {
 	double pi = 0.0;
@@ -56,12 +58,46 @@ double compute_pi_leibniz(size_t dt)
 	return sum * 4.0;
 }
 
+// Calculate 95% confidence interval
+// store the interval [min, max] in the first two parameters
+// with a set of data which has SAMPLE_SIZE elements
+// return mean value
+double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
+{
+	double mean = 0.0;
+	double stddev = 0.0;
+	double stderror;
+
+	// Calculate mean value
+	for (int i = 0; i < SAMPLE_SIZE; i++) {
+		mean += data[i];
+	}
+	mean /= SAMPLE_SIZE;
+
+	// Calculate standard deviation
+	for (int i = 0; i < SAMPLE_SIZE; i++) {
+		stddev += pow((data[i] - mean), 2);
+	}
+	stddev = sqrt(stddev / (double)SAMPLE_SIZE);
+
+	// Calculate standard error
+	stderror = stddev / sqrt((double)SAMPLE_SIZE);
+
+	*min = mean - (2.0 * stderror);
+	*max = mean + (2.0 * stderror);
+
+	return mean;
+}
+
 int main(int argc, char* argv[])
 {
 	unsigned int operation = atoi(argv[1]);
 	size_t n = atoi(argv[2]);
+
 	clock_t begin, end;
-	double time_spent;
+	double time_spent[SAMPLE_SIZE];
+	double min, max;
+
 	double (*compute_pi)(size_t);
 	char method_name[32];
 	char time_filename[32];
@@ -90,19 +126,24 @@ int main(int argc, char* argv[])
 			break;
 	}
 
-	begin = clock();
-	double pi = compute_pi(n * 1000000);
-	end = clock();
-	time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	for (int i = 0; i < SAMPLE_SIZE; i++) {
+		begin = clock();
+		compute_pi(n * 1000000);
+		end = clock();
+		time_spent[i] = (double)(end - begin) / CLOCKS_PER_SEC;
+	}
+	double mean_time = compute_ci(&min, &max, time_spent);
 
+	double pi = compute_pi(n * 1000000);
 	double diff = pi - M_PI > 0 ? pi - M_PI : M_PI - pi;
 	double error = diff / M_PI;
 
-	printf("%s(%zuM) needs %lf sec.\n", method_name, n, time_spent);
+	printf("%s(%zuM) needs time in 95%% confidence interval[%lf, %lf]\n",
+	       method_name, n, min, max);
 	printf("error rate = %.15lf\n", error);
 
 	FILE *fw = fopen(time_filename, "a");
-	fprintf(fw, "%zu %lf\n", n, time_spent);
+	fprintf(fw, "%zu %lf\n", n, mean_time);
 	fclose(fw);
 
 	fw = fopen(error_filename, "a");
