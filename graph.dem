@@ -1,0 +1,19 @@
+set logscale x 2
+set grid
+set title "Time Spent"
+set term png
+set output "time_spent.png"
+set xlabel "N(M)"
+set ylabel "time(second)"
+plot 'time_baseline.txt' smooth csplines, \
+     'time_avx.txt' smooth csplines, \
+     'time_leibniz.txt' smooth csplines
+
+set title "Error Rate"
+set term png
+set output "error_rate.png"
+set xlabel "N(M)"
+set ylabel "error"
+plot 'error_baseline.txt' smooth csplines, \
+     'error_avx.txt' smooth csplines, \
+     'error_leibniz.txt' smooth csplines
