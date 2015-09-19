@@ -47,15 +47,39 @@ double compute_pi_avx(size_t dt)
 	return pi * 4.0;
 }
 
-double compute_pi_leibniz(size_t dt)
+double compute_pi_leibniz(size_t n)
 {
 	double sum = 0.0;
-	for (size_t i = 0; i < dt; i++) {
+	for (size_t i = 0; i < n; i++) {
 		int sign = i % 2 == 0 ? 1 : -1;
 		sum += (sign / (2.0 * (double)i + 1.0));
 	}
 
 	return sum * 4.0;
+}
+
+double compute_pi_leibniz_avx(size_t n)
+{
+	double pi = 0.0;
+	register __m256d ymm0, ymm1, ymm2, ymm3, ymm4;
+
+	ymm0 = _mm256_setzero_pd();
+	ymm1 = _mm256_set1_pd(2.0);
+	ymm2 = _mm256_set1_pd(1.0);
+	ymm3 = _mm256_set_pd(1.0, -1.0, 1.0, -1.0);
+	
+	for (int i = 0; i <= n - 4; i += 4) {
+		ymm4 = _mm256_set_pd(i, i + 1.0, i + 2.0, i + 3.0);
+		ymm4 = _mm256_mul_pd(ymm4, ymm1);
+		ymm4 = _mm256_add_pd(ymm4, ymm2);
+		ymm4 = _mm256_div_pd(ymm3, ymm4);
+		ymm0 = _mm256_add_pd(ymm0, ymm4);
+	}
+	double tmp[4] __attribute__((aligned(32)));
+	_mm256_store_pd(tmp, ymm0);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3];
+
+	return pi * 4.0;
 }
 
 // Calculate 95% confidence interval
@@ -122,6 +146,11 @@ int main(int argc, char* argv[])
 			strcpy(time_filename, "time_leibniz.txt");
 			strcpy(error_filename, "error_leibniz.txt");
 			break;
+		case 3:
+			compute_pi = &compute_pi_leibniz_avx;
+			strcpy(method_name, "compute_pi_leibniz_avx");
+			strcpy(time_filename, "time_leibniz_avx.txt");
+			strcpy(error_filename, "error_leibniz_avx.txt");
 		default:
 			break;
 	}
