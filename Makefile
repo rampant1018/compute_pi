@@ -1,4 +1,4 @@
-CFLAGS += -mavx -std=c99 -Wall -Werror -O0
+CFLAGS += -mavx -mfma -std=c99 -Wall -Werror -O0
 
 all: compute_pi
 
