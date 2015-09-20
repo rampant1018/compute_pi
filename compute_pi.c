@@ -139,8 +139,9 @@ double compute_ci(double *min, double *max, double data[SAMPLE_SIZE])
 
 int main(int argc, char* argv[])
 {
-	unsigned int operation = atoi(argv[1]);
+	char operation[32];
 	size_t n = atoi(argv[2]);
+	strncpy(operation, argv[1], 32);
 
 	clock_t begin, end;
 	double time_spent[SAMPLE_SIZE];
@@ -151,32 +152,36 @@ int main(int argc, char* argv[])
 	char time_filename[32];
 	char error_filename[32];
 
-	switch(operation) {
-		case 0:
-			compute_pi = &compute_pi_baseline;
-			strcpy(method_name, "compute_pi_baseline");
-			strcpy(time_filename, "time_baseline.txt");
-			strcpy(error_filename, "error_baseline.txt");
-			break;
-		case 1:
-			compute_pi = &compute_pi_avx;
-			strcpy(method_name, "compute_pi_avx");
-			strcpy(time_filename, "time_avx.txt");
-			strcpy(error_filename, "error_avx.txt");
-			break;
-		case 2:
-			compute_pi = &compute_pi_leibniz;
-			strcpy(method_name, "compute_pi_leibniz");
-			strcpy(time_filename, "time_leibniz.txt");
-			strcpy(error_filename, "error_leibniz.txt");
-			break;
-		case 3:
-			compute_pi = &compute_pi_leibniz_avx;
-			strcpy(method_name, "compute_pi_leibniz_avx");
-			strcpy(time_filename, "time_leibniz_avx.txt");
-			strcpy(error_filename, "error_leibniz_avx.txt");
-		default:
-			break;
+	if (!strcmp(operation, "baseline")) {
+		compute_pi = &compute_pi_baseline;
+		strcpy(method_name, "compute_pi_baseline");
+		strcpy(time_filename, "time_baseline.txt");
+		strcpy(error_filename, "error_baseline.txt");
+	} else if (!strcmp(operation, "avx")) {
+		compute_pi = &compute_pi_avx;
+		strcpy(method_name, "compute_pi_avx");
+		strcpy(time_filename, "time_avx.txt");
+		strcpy(error_filename, "error_avx.txt");
+	} else if (!strcmp(operation, "leibniz")) {
+		compute_pi = &compute_pi_leibniz;
+		strcpy(method_name, "compute_pi_leibniz");
+		strcpy(time_filename, "time_leibniz.txt");
+		strcpy(error_filename, "error_leibniz.txt");
+	} else if (!strcmp(operation, "leibniz_avx")) {
+		compute_pi = &compute_pi_leibniz_avx;
+		strcpy(method_name, "compute_pi_leibniz_avx");
+		strcpy(time_filename, "time_leibniz_avx.txt");
+		strcpy(error_filename, "error_leibniz_avx.txt");
+	} else if (!strcmp(operation, "leibniz_avx_opt")) {
+		compute_pi = &compute_pi_leibniz_avx;
+		strcpy(method_name, "compute_pi_leibniz_avx_opt");
+		strcpy(time_filename, "time_leibniz_avx_opt.txt");
+		strcpy(error_filename, "error_leibniz_avx_opt.txt");
+	} else if (!strcmp(operation, "leibniz_fma")) {
+		compute_pi = &compute_pi_leibniz_fma;
+		strcpy(method_name, "compute_pi_leibniz_fma");
+		strcpy(time_filename, "time_leibniz_fma.txt");
+		strcpy(error_filename, "error_leibniz_fma.txt");
 	}
 
 	for (int i = 0; i < SAMPLE_SIZE; i++) {
