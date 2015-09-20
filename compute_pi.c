@@ -82,6 +82,52 @@ double compute_pi_leibniz_avx(size_t n)
 	return pi * 4.0;
 }
 
+double compute_pi_leibniz_avx_opt(size_t n)
+{
+	double pi = 0.0;
+	register __m256d ymm0, ymm1, ymm2, ymm3, ymm4, ymm5, ymm6, ymm7, ymm8;
+	register __m256d ymm9, ymm10, ymm11, ymm12, ymm13;
+
+	ymm0 = _mm256_set_pd(1.0, -1.0, 1.0, -1.0);
+	ymm1 = _mm256_set_pd(1.0, 3.0, 5.0, 7.0);
+	ymm2 = _mm256_set_pd(9.0, 11.0, 13.0, 15.0);
+	ymm3 = _mm256_set_pd(17.0, 19.0, 21.0, 23.0);
+	ymm4 = _mm256_set_pd(25.0, 27.0, 29.0, 31.0);
+	ymm13 = _mm256_set1_pd(32.0);
+
+	ymm5 = _mm256_setzero_pd();
+	ymm6 = _mm256_setzero_pd();
+	ymm7 = _mm256_setzero_pd();
+	ymm8 = _mm256_setzero_pd();
+	
+	for (int i = 0; i <= n - 16; i += 16) {
+		ymm9 = _mm256_div_pd(ymm0, ymm1);
+		ymm10 = _mm256_div_pd(ymm0, ymm2);
+		ymm11 = _mm256_div_pd(ymm0, ymm3);
+		ymm12 = _mm256_div_pd(ymm0, ymm4);
+
+		ymm1 = _mm256_add_pd(ymm1, ymm13);
+		ymm2 = _mm256_add_pd(ymm1, ymm13);
+		ymm3 = _mm256_add_pd(ymm1, ymm13);
+		ymm4 = _mm256_add_pd(ymm1, ymm13);
+
+		ymm5 = _mm256_add_pd(ymm5, ymm9);
+		ymm6 = _mm256_add_pd(ymm6, ymm10);
+		ymm7 = _mm256_add_pd(ymm7, ymm11);
+		ymm8 = _mm256_add_pd(ymm8, ymm12);
+	}
+	double tmp[4] __attribute__((aligned(32)));
+	_mm256_store_pd(tmp, ymm5);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	_mm256_store_pd(tmp, ymm6);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	_mm256_store_pd(tmp, ymm7);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3];
+	_mm256_store_pd(tmp, ymm8);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3];
+
+	return pi * 4.0;
+}
 
 double compute_pi_leibniz_fma(size_t n)
 {
