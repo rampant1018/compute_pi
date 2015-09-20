@@ -8,7 +8,9 @@ set ylabel "time(second)"
 plot 'time_baseline.txt' smooth csplines, \
      'time_avx.txt' smooth csplines, \
      'time_leibniz.txt' smooth csplines, \
-     'time_leibniz_avx.txt' smooth csplines
+     'time_leibniz_avx.txt' smooth csplines, \
+     'time_leibniz_avx_opt.txt' smooth csplines, \
+     'time_leibniz_fma.txt' smooth csplines
 
 set title "Error Rate"
 set term png
@@ -19,3 +21,5 @@ plot 'error_baseline.txt' smooth csplines, \
      'error_avx.txt' smooth csplines, \
      'error_leibniz.txt' smooth csplines, \
      'error_leibniz_avx.txt' smooth csplines
+     'error_leibniz_avx_opt.txt' smooth csplines, \
+     'error_leibniz_fma.txt' smooth csplines
