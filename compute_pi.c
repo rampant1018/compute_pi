@@ -128,6 +128,56 @@ double compute_pi_leibniz_avx_opt(size_t n)
 	return pi * 4.0;
 }
 
+double compute_pi_leibniz_avx_opt_single(size_t n)
+{
+	double pi = 0.0;
+	register __m256 ymm0, ymm1, ymm2, ymm3, ymm4, ymm5, ymm6, ymm7, ymm8;
+	register __m256 ymm9, ymm10, ymm11, ymm12, ymm13;
+
+	ymm0 = _mm256_set_ps(1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0);
+	ymm1 = _mm256_set_ps(1.0, 3.0, 5.0, 7.0, 9.0, 11.0, 13.0, 15.0);
+	ymm2 = _mm256_set_ps(17.0, 19.0, 21.0, 23.0, 25.0, 27.0, 29.0, 31.0);
+	ymm3 = _mm256_set_ps(33.0, 35.0, 37.0, 39.0, 41.0, 43.0, 45.0, 47.0);
+	ymm4 = _mm256_set_ps(49.0, 51.0, 53.0, 55.0, 57.0, 59.0, 61.0, 63.0);
+	ymm13 = _mm256_set1_ps(32.0);
+
+	ymm5 = _mm256_setzero_ps();
+	ymm6 = _mm256_setzero_ps();
+	ymm7 = _mm256_setzero_ps();
+	ymm8 = _mm256_setzero_ps();
+	
+	for (int i = 0; i <= n - 32; i += 32) {
+		ymm9 = _mm256_div_ps(ymm0, ymm1);
+		ymm1 = _mm256_add_ps(ymm1, ymm13);
+		ymm10 = _mm256_div_ps(ymm0, ymm2);
+		ymm2 = _mm256_add_ps(ymm1, ymm13);
+		ymm11 = _mm256_div_ps(ymm0, ymm3);
+		ymm3 = _mm256_add_ps(ymm1, ymm13);
+		ymm12 = _mm256_div_ps(ymm0, ymm4);
+		ymm4 = _mm256_add_ps(ymm1, ymm13);
+
+		ymm5 = _mm256_add_ps(ymm5, ymm9);
+		ymm6 = _mm256_add_ps(ymm6, ymm10);
+		ymm7 = _mm256_add_ps(ymm7, ymm11);
+		ymm8 = _mm256_add_ps(ymm8, ymm12);
+	}
+	float tmp[8] __attribute__((aligned(32)));
+	_mm256_store_ps(tmp, ymm5);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3] + \
+	      tmp[4] + tmp[5] + tmp[6] + tmp[7];
+	_mm256_store_ps(tmp, ymm6);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3] + \
+	      tmp[4] + tmp[5] + tmp[6] + tmp[7];
+	_mm256_store_ps(tmp, ymm7);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3] + \
+	      tmp[4] + tmp[5] + tmp[6] + tmp[7];
+	_mm256_store_ps(tmp, ymm8);
+	pi += tmp[0] + tmp[1] + tmp[2] + tmp[3] + \
+	      tmp[4] + tmp[5] + tmp[6] + tmp[7];
+
+	return pi * 4.0;
+}
+
 double compute_pi_leibniz_fma(size_t n)
 {
 	double pi = 0.0;
@@ -193,9 +243,9 @@ int main(int argc, char* argv[])
 	double min, max;
 
 	double (*compute_pi)(size_t);
-	char method_name[32];
-	char time_filename[32];
-	char error_filename[32];
+	char method_name[64];
+	char time_filename[64];
+	char error_filename[64];
 
 	if (!strcmp(operation, "baseline")) {
 		compute_pi = &compute_pi_baseline;
@@ -222,6 +272,11 @@ int main(int argc, char* argv[])
 		strcpy(method_name, "compute_pi_leibniz_avx_opt");
 		strcpy(time_filename, "time_leibniz_avx_opt.txt");
 		strcpy(error_filename, "error_leibniz_avx_opt.txt");
+	} else if (!strcmp(operation, "leibniz_avx_opt_single")) {
+		compute_pi = &compute_pi_leibniz_avx_opt_single;
+		strcpy(method_name, "compute_pi_leibniz_avx_opt_single");
+		strcpy(time_filename, "time_leibniz_avx_opt_single.txt");
+		strcpy(error_filename, "error_leibniz_avx_opt_single.txt");
 	} else if (!strcmp(operation, "leibniz_fma")) {
 		compute_pi = &compute_pi_leibniz_fma;
 		strcpy(method_name, "compute_pi_leibniz_fma");
