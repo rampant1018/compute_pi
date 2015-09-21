@@ -22,7 +22,7 @@ double compute_pi_baseline(size_t dt)
 	return pi * 4.0;
 }
 
-double compute_pi_avx(size_t dt)
+double compute_pi_baseline_avx(size_t dt)
 {
 	double pi = 0.0;
 	double delta = 1.0 / dt;
@@ -202,11 +202,11 @@ int main(int argc, char* argv[])
 		strcpy(method_name, "compute_pi_baseline");
 		strcpy(time_filename, "time_baseline.txt");
 		strcpy(error_filename, "error_baseline.txt");
-	} else if (!strcmp(operation, "avx")) {
-		compute_pi = &compute_pi_avx;
-		strcpy(method_name, "compute_pi_avx");
-		strcpy(time_filename, "time_avx.txt");
-		strcpy(error_filename, "error_avx.txt");
+	} else if (!strcmp(operation, "baseline_avx")) {
+		compute_pi = &compute_pi_baseline_avx;
+		strcpy(method_name, "compute_pi_baseline_avx");
+		strcpy(time_filename, "time_baseline_avx.txt");
+		strcpy(error_filename, "error_baseline_avx.txt");
 	} else if (!strcmp(operation, "leibniz")) {
 		compute_pi = &compute_pi_leibniz;
 		strcpy(method_name, "compute_pi_leibniz");
