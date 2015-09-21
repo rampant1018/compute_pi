@@ -102,13 +102,12 @@ double compute_pi_leibniz_avx_opt(size_t n)
 	
 	for (int i = 0; i <= n - 16; i += 16) {
 		ymm9 = _mm256_div_pd(ymm0, ymm1);
-		ymm10 = _mm256_div_pd(ymm0, ymm2);
-		ymm11 = _mm256_div_pd(ymm0, ymm3);
-		ymm12 = _mm256_div_pd(ymm0, ymm4);
-
 		ymm1 = _mm256_add_pd(ymm1, ymm13);
+		ymm10 = _mm256_div_pd(ymm0, ymm2);
 		ymm2 = _mm256_add_pd(ymm1, ymm13);
+		ymm11 = _mm256_div_pd(ymm0, ymm3);
 		ymm3 = _mm256_add_pd(ymm1, ymm13);
+		ymm12 = _mm256_div_pd(ymm0, ymm4);
 		ymm4 = _mm256_add_pd(ymm1, ymm13);
 
 		ymm5 = _mm256_add_pd(ymm5, ymm9);
