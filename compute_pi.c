@@ -219,7 +219,7 @@ int main(int argc, char* argv[])
 		strcpy(time_filename, "time_leibniz_avx.txt");
 		strcpy(error_filename, "error_leibniz_avx.txt");
 	} else if (!strcmp(operation, "leibniz_avx_opt")) {
-		compute_pi = &compute_pi_leibniz_avx;
+		compute_pi = &compute_pi_leibniz_avx_opt;
 		strcpy(method_name, "compute_pi_leibniz_avx_opt");
 		strcpy(time_filename, "time_leibniz_avx_opt.txt");
 		strcpy(error_filename, "error_leibniz_avx_opt.txt");
