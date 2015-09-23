@@ -6,7 +6,7 @@
 #include <string.h>
 #include <time.h>
 
-#define M_PI acos(-1.0)
+#define M_PI acos(-1.0)	// the exactly PI number by math functions.
 
 #define SAMPLE_SIZE 10
 
@@ -104,11 +104,11 @@ double compute_pi_leibniz_avx_opt(size_t n)
 		ymm9 = _mm256_div_pd(ymm0, ymm1);
 		ymm1 = _mm256_add_pd(ymm1, ymm13);
 		ymm10 = _mm256_div_pd(ymm0, ymm2);
-		ymm2 = _mm256_add_pd(ymm1, ymm13);
+		ymm2 = _mm256_add_pd(ymm2, ymm13);
 		ymm11 = _mm256_div_pd(ymm0, ymm3);
-		ymm3 = _mm256_add_pd(ymm1, ymm13);
+		ymm3 = _mm256_add_pd(ymm3, ymm13);
 		ymm12 = _mm256_div_pd(ymm0, ymm4);
-		ymm4 = _mm256_add_pd(ymm1, ymm13);
+		ymm4 = _mm256_add_pd(ymm4, ymm13);
 
 		ymm5 = _mm256_add_pd(ymm5, ymm9);
 		ymm6 = _mm256_add_pd(ymm6, ymm10);
@@ -139,7 +139,7 @@ double compute_pi_leibniz_avx_opt_single(size_t n)
 	ymm2 = _mm256_set_ps(17.0, 19.0, 21.0, 23.0, 25.0, 27.0, 29.0, 31.0);
 	ymm3 = _mm256_set_ps(33.0, 35.0, 37.0, 39.0, 41.0, 43.0, 45.0, 47.0);
 	ymm4 = _mm256_set_ps(49.0, 51.0, 53.0, 55.0, 57.0, 59.0, 61.0, 63.0);
-	ymm13 = _mm256_set1_ps(32.0);
+	ymm13 = _mm256_set1_ps(64.0);
 
 	ymm5 = _mm256_setzero_ps();
 	ymm6 = _mm256_setzero_ps();
@@ -150,11 +150,11 @@ double compute_pi_leibniz_avx_opt_single(size_t n)
 		ymm9 = _mm256_div_ps(ymm0, ymm1);
 		ymm1 = _mm256_add_ps(ymm1, ymm13);
 		ymm10 = _mm256_div_ps(ymm0, ymm2);
-		ymm2 = _mm256_add_ps(ymm1, ymm13);
+		ymm2 = _mm256_add_ps(ymm2, ymm13);
 		ymm11 = _mm256_div_ps(ymm0, ymm3);
-		ymm3 = _mm256_add_ps(ymm1, ymm13);
+		ymm3 = _mm256_add_ps(ymm3, ymm13);
 		ymm12 = _mm256_div_ps(ymm0, ymm4);
-		ymm4 = _mm256_add_ps(ymm1, ymm13);
+		ymm4 = _mm256_add_ps(ymm4, ymm13);
 
 		ymm5 = _mm256_add_ps(ymm5, ymm9);
 		ymm6 = _mm256_add_ps(ymm6, ymm10);
