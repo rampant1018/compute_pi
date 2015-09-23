@@ -201,6 +201,36 @@ double compute_pi_leibniz_fma(size_t n)
 	return pi * 4.0;
 }
 
+double F(int i, size_t dt){
+	if(i == dt)
+		return 1;
+	else
+		return 1 + i/(2.0*i + 1) * F(i+1, dt);
+}
+
+double compute_pi_recursion(size_t dt)
+{
+	dt /= 1000;
+	double pi = 2 * F(1, dt);
+
+	return pi;
+}
+
+double compute_pi_leibniz_JM(size_t dt)
+{
+	double pi1 = 0.0, pi2 = 0.0;
+
+	for (size_t i = 0; i < dt; i++) {
+		double sign = i % 2 == 0 ? 0.0041841 : -0.0041841;	// 1/239 == 0.0041841
+		pi2 += (sign / (2.0 * (double)i + 1.0));
+	}
+	for (size_t i = 0; i < dt; i++) {
+		double sign = i % 2 == 0 ? 0.25 : -0.25;
+		pi1 += (sign / (2.0 * (double)i + 1.0));
+	}
+
+	return (16 * pi1 - 4 * pi2);
+}
 // Calculate 95% confidence interval
 // store the interval [min, max] in the first two parameters
 // with a set of data which has SAMPLE_SIZE elements
@@ -282,17 +312,30 @@ int main(int argc, char* argv[])
 		strcpy(method_name, "compute_pi_leibniz_fma");
 		strcpy(time_filename, "time_leibniz_fma.txt");
 		strcpy(error_filename, "error_leibniz_fma.txt");
+	} else if (!strcmp(operation, "recursion")) {
+		compute_pi = &compute_pi_recursion;
+		strcpy(method_name, "compute_pi_recursion");
+		strcpy(time_filename, "time_recursion.txt");
+		strcpy(error_filename, "error_recursion.txt");
+	} else if (!strcmp(operation, "leibniz_JM")) {
+		compute_pi = &compute_pi_leibniz_JM;
+		strcpy(method_name, "compute_pi_leibniz_JM");
+		strcpy(time_filename, "time_leibniz_JM.txt");
+		strcpy(error_filename, "error_leibniz_JM.txt");
 	}
+
+
 
 	for (int i = 0; i < SAMPLE_SIZE; i++) {
 		begin = clock();
-		compute_pi(n * 1000000);
+		compute_pi(n * 1024*1024);
 		end = clock();
 		time_spent[i] = (double)(end - begin) / CLOCKS_PER_SEC;
 	}
 	double mean_time = compute_ci(&min, &max, time_spent);
 
-	double pi = compute_pi(n * 1000000);
+	double pi = 0.0;
+	pi = compute_pi(n * 1024*1024);
 	double diff = pi - M_PI > 0 ? pi - M_PI : M_PI - pi;
 	double error = diff / M_PI;
 
