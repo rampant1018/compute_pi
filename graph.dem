@@ -10,7 +10,9 @@ plot 'time_baseline.txt' smooth csplines, \
      'time_leibniz.txt' smooth csplines, \
      'time_leibniz_avx.txt' smooth csplines, \
      'time_leibniz_avx_opt.txt' smooth csplines, \
-     'time_leibniz_avx_opt_single.txt' smooth csplines
+     'time_leibniz_avx_opt_single.txt' smooth csplines, \
+	 'time_recursion.txt' smooth csplines, \
+     'time_leibniz_JM.txt' smooth csplines
 
 set title "Error Rate"
 set term png
@@ -20,6 +22,8 @@ set ylabel "error"
 plot 'error_baseline.txt' smooth csplines, \
      'error_baseline_avx.txt' smooth csplines, \
      'error_leibniz.txt' smooth csplines, \
-     'error_leibniz_avx.txt' smooth csplines
+     'error_leibniz_avx.txt' smooth csplines, \
      'error_leibniz_avx_opt.txt' smooth csplines, \
-     'error_leibniz_avx_opt_single.txt' smooth csplines
+     'error_leibniz_avx_opt_single.txt' smooth csplines, \
+	 'error_recursion.txt' smooth csplines, \
+	 'error_leibniz_JM.txt' smooth csplines
